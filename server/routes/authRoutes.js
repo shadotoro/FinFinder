@@ -6,14 +6,18 @@ const jwt = require('jsonwebtoken');
 
 router.post('/signup', async (req, res) => {
     const { username, password, email } = req.body;
+console.log('Signup request received:', { username, email });  // à retirer plus tard
+
     try {
         let user = await User.findOne({ email });
         if (user) {
+console.log('User already exists');  // à retirer plus tard
             return res.status(400).json({ msg: 'User already exists' });
         }
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
+console.log('Hashed Password:', hashedPassword);  // à retirer plus tard
 
         user = new User({
             username,
@@ -41,14 +45,19 @@ router.post('/signup', async (req, res) => {
 
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
+console.log('Login request received:', { email, password }); // à retirer plus tard
     try {
         let user = await User.findOne({ email });
         if (!user) {
+console.log('User not found');  // à retirer plus tard
             return res.status(400).json({ msg: 'Invalid credentials' });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
+console.log('Password match:', isMatch); // à retirer plus tard
+
         if (!isMatch) {
+console.log('Password does not match'); // à retirer plus tard
             return res.status(400).json({ msg: 'Invalid credentials' });
         }
 
