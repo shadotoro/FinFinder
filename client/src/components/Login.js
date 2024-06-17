@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 function Login() {
     const [formData, setFormData] = useState({
@@ -21,12 +22,15 @@ function Login() {
             const body = JSON.stringify({ email, password });
             const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3001';
             const res = await axios.post(`${apiUrl}/api/auth/login`, body, config);
-            console.log(res.data);
+            localStorage.setItem('token', res.data.token);
+            toast.success('Login successful');
+            // Redirect to profile page
         } catch (err) {
-            setError(err.response?.data?.message || 'Login failed');
-            console.error(err.response?.data);
+            setError(err.response?.data?.msg || 'Login failed');
+            toast.error(err.response?.data?.msg || 'Login failed');
         }
     };
+
     return (
         <div className="login-container">
             <form className="login-form" onSubmit={onSubmit}>
