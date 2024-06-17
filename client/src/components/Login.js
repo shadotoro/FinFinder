@@ -19,7 +19,7 @@ function Login() {
                 }
             };
             const body = JSON.stringify({ email, password });
-            const apiUrl = process.env.REACT_APP_API_URL;
+            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3001';
             const res = await axios.post(`${apiUrl}/api/auth/login`, body, config);
             console.log(res.data);
         } catch (err) {

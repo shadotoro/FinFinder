@@ -13,7 +13,7 @@ function Profile() {
                         'x-auth-token': localStorage.getItem('token')
                     }
                 };
-                const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+                const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3001';
                 const res = await axios.get(`${apiUrl}/api/users/profile`, config);
                 setUser(res.data);
             } catch (err) {
