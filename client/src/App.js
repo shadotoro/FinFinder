@@ -6,16 +6,18 @@ import Profile from './components/Profile';
 import Navigation from './components/Navigation';
 
 function App() {
-    console.log('App component rendered');
+    const isAuthenticated = !!localStorage.getItem('token');
+
     return (
         <Router>
             <div className="App">
                 <Navigation />
                 <Routes>
-                    <Route path="/" element={<Navigate to="/login" />} />
+                    <Route path="/" element={<Navigate to={isAuthenticated ? "/profile" : "/login"} />} />
                     <Route path="/signup" element={<SignUp />} />
                     <Route path="/login" element={<Login />} />
-                    <Route path="/profile" element={<Profile />} />
+                    {isAuthenticated && <Route path="/profile" element={<Profile />} />}
+                    {!isAuthenticated && <Route path="/profile" element={<Navigate to="/login" />} />}
                 </Routes>
             </div>
         </Router>
