@@ -4,26 +4,25 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+// Ajout de journalisation détaillée
 router.post('/signup', async (req, res) => {
     const { username, password, email } = req.body;
+    console.log('Signup request:', { username, email, password });
     try {
         let user = await User.findOne({ email });
         if (user) {
+            console.log('User already exists:', email);
             return res.status(400).json({ msg: 'User already exists' });
         }
-
-        const salt = await bcrypt.genSalt(10);
-        console.log('Password before hashing:', password); // Debug mdp
-        const hashedPassword = await bcrypt.hash(password, salt);
-        console.log('Password after hashing:', hashedPassword); // Debug mdp
 
         user = new User({
             username,
             email,
-            password: hashedPassword
+            password
         });
 
         await user.save();
+        console.log('User saved:', user);
 
         const payload = {
             user: {
@@ -32,33 +31,34 @@ router.post('/signup', async (req, res) => {
         };
 
         jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 36000 }, (err, token) => {
-            if (err) {
-                console.error('JWT signing error:', err); // Added log
-                throw err;
-            }
+            if (err) throw err;
+            console.log('Token generated:', token);
             res.json({ token });
         });
     } catch (err) {
-        console.error('Signup error:', err.message); // Added log
+        console.error('Error during signup:', err.message);
         res.status(500).send('Server error');
     }
 });
 
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
+    console.log('Login request received for email:', email);
     try {
-        console.log('Login request received for email:', email); // Debug log
         let user = await User.findOne({ email });
         if (!user) {
-            console.log('User not found'); // Debug log
+            console.log('User not found:', email);
             return res.status(400).json({ msg: 'Invalid credentials' });
         }
-        console.log('Password entered:', password); // Debug mdp
-        console.log('Password stored in DB:', user.password); // Debug mdp
-        const isMatch = await bcrypt.compare(password, user.password);
-        console.log(`Password match: ${isMatch}`); // Debug log
+
+        console.log('Password entered:', password);
+        console.log('Password stored in DB:', user.password);
+
+        const isMatch = password === user.password; 
+        console.log('Password match:', isMatch);
+
         if (!isMatch) {
-            console.log('Password does not match'); // Debug log
+            console.log('Password does not match');
             return res.status(400).json({ msg: 'Invalid credentials' });
         }
 
@@ -69,14 +69,12 @@ router.post('/login', async (req, res) => {
         };
 
         jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '5h' }, (err, token) => {
-            if (err) {
-                console.error('JWT signing error:', err); // Added log
-                throw err;
-            }
+            if (err) throw err;
+            console.log('Token generated:', token);
             res.json({ token });
         });
     } catch (err) {
-        console.error('Login error:', err.message); // Added log
+        console.error('Error during login:', err.message);
         res.status(500).send('Server error');
     }
 });

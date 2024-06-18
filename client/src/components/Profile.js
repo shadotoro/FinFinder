@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 function Profile() {
     const [user, setUser] = useState(null);
@@ -19,8 +20,10 @@ function Profile() {
                 const res = await axios.get(`${apiUrl}/api/users/profile`, config);
                 setUser(res.data);
                 setFormData({ username: res.data.username, email: res.data.email });
+                toast.success('Profile fetched successfully');
             } catch (err) {
                 setError(err.response?.data?.msg || 'Error fetching profile');
+                toast.error('Error fetching profile');
                 console.error(err.response?.data);
             }
         };

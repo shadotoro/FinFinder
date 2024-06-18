@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 function SignUp() {
     const [formData, setFormData] = useState({
@@ -23,8 +24,10 @@ function SignUp() {
             const apiUrl = process.env.REACT_APP_API_URL;
             const res = await axios.post(`${apiUrl}/api/auth/signup`, body, config);
             console.log(res.data);
+            toast.success('Registration successful');
         } catch (err) {
             setError(err.response?.data?.message || 'Registration failed');
+            toast.error('Registration failed');
             console.error(err.response?.data);
         }
     };
