@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 
 // Ajout de journalisation détaillée
 router.post('/signup', async (req, res) => {
@@ -75,6 +76,95 @@ router.post('/login', async (req, res) => {
         });
     } catch (err) {
         console.error('Error during login:', err.message);
+        res.status(500).send('Server error');
+    }
+});
+
+// Route pour demander une réinitialisation de mot de passe
+router.post('/forgot-password', async (req, res) => {
+    const { email } = req.body;
+    try {
+        let user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ msg: 'User not found' });
+        }
+
+        const resetToken = crypto.randomBytes(20).toString('hex');
+        const resetPasswordExpire = Date.now() + 3600000; // 1 heure
+
+        user.resetPasswordToken = resetToken;
+        user.resetPasswordExpire = resetPasswordExpire;
+        await user.save();
+
+        const resetUrl = `http://${req.headers.host}/api/auth/reset-password/${resetToken}`;
+
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL,
+                pass: process.env.EMAIL_PASSWORD,
+            },
+        });
+
+        const mailOptions = {
+            to: user.email,
+            from: process.env.EMAIL,
+            subject: 'Password reset',
+            text: `You are receiving this email because you (or someone else) have requested the reset of a password. Please click on the following link, or paste this into your browser to complete the process: \n\n ${resetUrl}`,
+        };
+
+        transporter.sendMail(mailOptions, (err, response) => {
+            if (err) {
+                console.error('Error sending email:', err.message);
+                return res.status(500).send('Email could not be sent');
+            }
+            res.status(200).json({ msg: 'Email sent' });
+        });
+    } catch (err) {
+        console.error('Error during forgot-password:', err.message);
+        res.status(500).send('Server error');
+    }
+});
+
+// Route pour réinitialiser le mot de passe
+router.post('/reset-password/:resetToken', async (req, res) => {
+    const { resetToken } = req.params;
+    const { password } = req.body;
+
+    try {
+        let user = await User.findOne({
+            resetPasswordToken: resetToken,
+            resetPasswordExpire: { $gt: Date.now() },
+        });
+
+        if (!user) {
+            return res.status(400).json({ msg: 'Invalid or expired token' });
+        }
+
+        user.password = password;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpire = undefined;
+        await user.save();
+
+        res.status(200).json({ msg: 'Password reset successful' });
+    } catch (err) {
+        console.error('Error during reset-password:', err.message);
+        res.status(500).send('Server error');
+    }
+});
+
+// route de suppression de compte
+router.delete('/delete-account', async (req, res) => {
+    try {
+        let user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ msg: 'User not found'});
+        }
+
+        await user.remove();
+        res.json({ msg: 'User removed'});
+    } catch (err) {
+        console.error(err.message);
         res.status(500).send('Server error');
     }
 });

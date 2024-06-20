@@ -1,6 +1,7 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react'; // import de Ract pour utilisation des composants
+import { Link } from 'react-router-dom'; // import de Link pour la navigation entre les routes
 
+// définition du composant de navigation et de la barre
 function Navigation() {
     return (
         <nav>
@@ -13,4 +14,4 @@ function Navigation() {
     );
 }
 
-export default Navigation;
+export default Navigation; // exportation pour utilisation ailleurs dans l'appli
