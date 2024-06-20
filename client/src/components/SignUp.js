@@ -3,15 +3,18 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 
 function SignUp() {
+    // stocke les données du form d'inscription
     const [formData, setFormData] = useState({
         username: '',
         password: '',
         email: ''
     });
-    const [error, setError] = useState('');
+    const [error, setError] = useState(''); // gére les erreurs
 
     const { username, password, email } = formData;
+    // gestion des changements dans le form
     const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
+    // gestion de la soumission du form
     const onSubmit = async e => {
         e.preventDefault();
         try {
@@ -22,15 +25,18 @@ function SignUp() {
             };
             const body = JSON.stringify({ username, password, email });
             const apiUrl = process.env.REACT_APP_API_URL;
+            // request POST pour l'inscription
             const res = await axios.post(`${apiUrl}/api/auth/signup`, body, config);
             console.log(res.data);
             toast.success('Registration successful');
         } catch (err) {
+            // gére les erreurs 
             setError(err.response?.data?.message || 'Registration failed');
             toast.error('Registration failed');
             console.error(err.response?.data);
         }
     };
+    // rendu du composant
     return (
         <div className="signup-container">
             <form className="signup-form" onSubmit={onSubmit}>
