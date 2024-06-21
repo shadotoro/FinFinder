@@ -11,6 +11,7 @@ const morgan = require("morgan");
 const mongoose = require("mongoose");
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
+const homeRoutes = require('./routes/homeRoutes');
 
 const app = express(); // initialise express
 // utilise les middlewares nécessaires
@@ -21,6 +22,8 @@ app.use(morgan('combined')); // logger les request HTTP
 // utiliser les routes définies
 app.use('/api/users', userRoutes); // routes pour les utilisateurs
 app.use('/api/auth', authRoutes); // routes pour l'authentification
+app.use('/api/home', homeRoutes); // routes pour la homepage
+
 // route pour tester la co' à la bdd
 app.get('/test-db', async (req, res) => {
     try {
@@ -31,7 +34,7 @@ app.get('/test-db', async (req, res) => {
     }
 });
 
-// middlewre pour gérer les  404 errors
+// middleware pour gérer les  404 errors
 app.use((req, res, next) => {
     res.status(404).send('Page not found'); // retourne une err si la route n'est pas trouvée
 });
