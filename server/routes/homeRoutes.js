@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Project = require('../models/Project'); // à créer !!!
+const Project = require('../models/Project');
 
 // Route pour obtenir les projets phares
 router.get('/featured-projects', async (req, res) => {

@@ -8,6 +8,7 @@ import PrivateRoute from './components/PrivateRoute';
 import UpdateProfile from './components/UpdateProfile';
 import RequestResetPassword from './components/RequestResetPassword';
 import ResetPassword from './components/ResetPassword';
+import Home from './components/Home';
 
 function App() {
     // Vérifie si l'utilisateur est authentifié en cherchant un jeton dans le stockage local
@@ -21,7 +22,7 @@ function App() {
                 {/* Définition des routes pour l'application */}
                 <Routes>
                     {/* Redirige vers /profile si l'utilisateur est authentifié, sinon vers /login */}
-                    <Route path="/" element={<Navigate to={isAuthenticated ? "/profile" : "/login"} />} />
+                    <Route path="/" element={<Home />} />
                     {/* Route pour la page d'inscription */}
                     <Route path="/signup" element={<SignUp />} />
                     {/* Route pour la page de connexion */}
@@ -38,6 +39,8 @@ function App() {
                     {isAuthenticated && <Route path="/profile" element={<Profile />} />}
                     {/* Route conditionnelle pour rediriger vers la page de connexion si non authentifié */}
                     {!isAuthenticated && <Route path="/profile" element={<Navigate to="/login" />} />}
+                    {/* Route pour la homepage */}
+                    <Route path="/home" element={<Home />} />
                 </Routes>
             </div>
         </Router>
