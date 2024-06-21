@@ -1,8 +1,9 @@
-require('dotenv').config({ path: './.env' });
+require('dotenv').config({ path: './.env' }); // charge les variables d'environnement depuis le fichier .env
+// affiche les variables pour vérif ( en prod uniquement, à retirer)
 console.log('MONGODB_URI:', process.env.MONGODB_URI);
 console.log('PORT:', process.env.PORT);
 console.log('JWT_SECRET:', process.env.JWT_SECRET);
-
+// import des modules nécessaires
 const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
@@ -11,37 +12,37 @@ const mongoose = require("mongoose");
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
 
-const app = express();
-
-app.use(express.json());
-app.use(helmet());
-app.use(cors());
-app.use(morgan('combined'));
-
-app.use('/api/users', userRoutes);
-app.use('/api/auth', authRoutes);
-
+const app = express(); // initialise express
+// utilise les middlewares nécessaires
+app.use(express.json()); // parser les request avec payload JSON
+app.use(helmet()); // sécuriser les en-têtes HTTP
+app.use(cors()); // activer les request cross-origin
+app.use(morgan('combined')); // logger les request HTTP
+// utiliser les routes définies
+app.use('/api/users', userRoutes); // routes pour les utilisateurs
+app.use('/api/auth', authRoutes); // routes pour l'authentification
+// route pour tester la co' à la bdd
 app.get('/test-db', async (req, res) => {
     try {
-        await mongoose.connection.db.admin().ping();
+        await mongoose.connection.db.admin().ping(); // ping la bdd pour vérif la co'
         res.status(200).send("DB connected");
     } catch (err) {
         res.status(500).send('Failed to connect to DB');
     }
 });
 
-// handle 404 errors
+// middlewre pour gérer les  404 errors
 app.use((req, res, next) => {
-    res.status(404).send('Page not found');
+    res.status(404).send('Page not found'); // retourne une err si la route n'est pas trouvée
 });
 
-// global error handler
+// gérer les erreurs globales
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).send('Something broke!');
+    res.status(500).send('Something broke!'); // retourne une err en cas de prob server
 });
-
-console.log('Connecting to MongoDB...'); // à retirer plus tard ou pas ...
+// Co' à la bdd et gestion des événements de co' (co' réussie, err, déco')
+console.log('Connecting to MongoDB...'); // à retirer plus tard ou pas ... 
 mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('MongoDB connected successfully'))
     .catch(err => console.log('Failed to connect to MongoDB', err));
@@ -57,7 +58,7 @@ mongoose.connection.on('error', (err) => {
 mongoose.connection.on('disconnected', () => {
     console.log('Mongoose disconnected from DB');
 });
-
+// démarrer le serveur sur le port spécifié
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
