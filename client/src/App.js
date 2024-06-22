@@ -17,24 +17,22 @@ function App() {
     return (
         <Router>
             <div className="App">
-                {/* Composant de navigation */}
-                <Navigation />
                 {/* Définition des routes pour l'application */}
                 <Routes>
                     {/* Redirige vers /profile si l'utilisateur est authentifié, sinon vers /login */}
                     <Route path="/" element={<Home />} />
                     {/* Route pour la page d'inscription */}
-                    <Route path="/signup" element={<SignUp />} />
+                    <Route path="/signup" element={<><Navigation /><SignUp /></>} />
                     {/* Route pour la page de connexion */}
-                    <Route path="/login" element={<Login />} />
+                    <Route path="/login" element={<><Navigation /><Login /></>} />
                     {/* Route pour le profil utilisateur, protégée par une route privée */}
-                    <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+                    <Route path="/profile" element={<PrivateRoute><Navigation /><Profile /></PrivateRoute>} />
                     {/* Route pour la mise à jour du profil utilisateur */}
-                    <Route path="/update-profile" element={<UpdateProfile />} />
+                    <Route path="/update-profile" element={<><Navigation /><UpdateProfile /></>} />
                     {/* Route pour la demande de réinitialisation du mot de passe utilisateur */}
-                    <Route path="/reset-password" element={<RequestResetPassword />} />
+                    <Route path="/reset-password" element={<><Navigation /><RequestResetPassword /></>} />
                     {/* Route pour la réinitialisation du mot de passe utilisateur avec un jeton */}
-                    <Route path="/reset-password/:token" element={<ResetPassword />} />
+                    <Route path="/reset-password/:token" element={<><Navigation /><ResetPassword /></>} />
                     {/* Route conditionnelle pour afficher le profil si l'utilisateur est authentifié */}
                     {isAuthenticated && <Route path="/profile" element={<Profile />} />}
                     {/* Route conditionnelle pour rediriger vers la page de connexion si non authentifié */}

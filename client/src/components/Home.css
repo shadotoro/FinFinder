@@ -1,22 +1,15 @@
-
-.home-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
+/* styles généraux */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e1fbfd;
+    margin: 0;
+    padding: 0;
 }
 
-.home-header {
-    background-color: #333;
-    color: #fff;
-    padding: 20px;
-    text-align: center;
-}
-
+/* Navigation */
 .home-navigation {
     background-color: #444;
-    padding: 10px;
+    padding: 1rem;
 }
 
 .home-navigation ul {
@@ -34,11 +27,26 @@
     text-decoration: none;
 }
 
+.home-navigation ul li a:hover {
+    text-decoration: underline;
+}
+
+/* Contenu principal */
 .home-main {
     flex: 1;
     padding: 20px;
 }
 
+.home-main h2 {
+    color: #3a3a3a;
+    margin-top: 0;
+}
+
+.home-main section {
+    margin-bottom: 2rem;
+}
+
+/* Projets phares */
 .featured-projects {
     background-color: #f9f9f9;
     padding: 20px;
@@ -51,6 +59,7 @@
     gap: 20px;
 }
 
+/* Pied de page */
 .home-footer {
     background-color: #333;
     color: #fff;
