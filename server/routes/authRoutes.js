@@ -5,9 +5,10 @@ const jwt = require('jsonwebtoken'); // import de jsonwebtoken
 const crypto = require('crypto'); // import de crypto pour générer des jetons sécurisés
 const nodemailer = require('nodemailer'); // import de nodemailer pour l'envoye de mails
 
-// Rout pour l'inscription d'un utilisateur
-router.post('/signup', async (req, res) => {
+// Route pour l'inscription des donateurs
+router.post('/signup-donateur', async (req, res) => {
     const { username, password, email } = req.body; // extraction des données de la request
+    console.log('Signup request:', { username, email, password, role: 'Donateur' });
     try {
         // vérifie si l'utilisateur existe déjà dans la bdd
         let user = await User.findOne({ email });
@@ -19,7 +20,8 @@ router.post('/signup', async (req, res) => {
         user = new User({
             username,
             email,
-            password
+            password,
+            role: 'Donateur'
         });
         // enregistrement du nouvel utilisateur dans la bdd
         await user.save();
@@ -27,7 +29,8 @@ router.post('/signup', async (req, res) => {
 
         const payload = { // création d'un payload pour le token JWT
             user: {
-                id: user.id
+                id: user.id,
+                role: user.role
             }
         };
         // généération d'un token
@@ -38,6 +41,46 @@ router.post('/signup', async (req, res) => {
     } catch (err) {
         console.error('Error during signup:', err.message); // log des erreurs éventuelles
         res.status(500).send('Server error'); // retourne une erreur de serveur en cas de problème
+    }
+});
+
+// route pour l'inscription des chercheurs
+router.post('/signup-chercheur', async (req, res) => {
+    const { username, password, email } = req.body; // extraction des données de la request
+    console.log('Signup request:', { username, email, password, role: 'Chercheur' });
+    try {
+        // vérifie si l'utilisateur existe déjà dans la bdd
+        let user = await User.findOne({ email });
+        if (user) {
+            console.log('User already exists:', email);
+            return res.status(400).json({ msg: 'User already exists' });
+        }
+        // création d'un nouvel utilisateur
+        user = new User({
+            username,
+            email,
+            password,
+            role: 'Chercheur'
+        });
+        
+        await user.save();
+        console.log('User savec', user);
+
+        const payload = {
+            user: {
+                id: user.id,
+                role: user.role
+            }
+        };
+
+            jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 36000 }, (err, token) => {
+                if (err) throw err;
+                console.log('Token generated:', token)
+                res.json({ token });
+            });            
+    } catch (err) {
+        console.error('Error during signup:', err.message);
+        res.status(500).send('Server error');
     }
 });
 

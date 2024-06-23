@@ -15,9 +15,11 @@ function Home() {
             </header>
             <nav className="home-navigation">
                 <ul>
-                    <li><Link to="/signup">Sign Up</Link></li>
+                    <li><Link to="/signup-donateur">Sign Up Donateur</Link></li>
+                    <li><Link to="/signup-chercheur">Sign Up Chercheur</Link></li>
                     <li><Link to="/login">Login</Link></li>
                     <li><Link to="/profile">Profile</Link></li>
+                    <li><Link to="/">Home</Link></li>
                 </ul>
             </nav>
             <main className="home-main">

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import './Profile.css';
 
 function Profile() {
     const [user, setUser] = useState(null); // state pour stocker les infos de l'utilisateur
@@ -87,14 +88,14 @@ function Profile() {
     // affiche le composant Profile
     return (
         <div className="profile-container">
-            <h1>Profile</h1>
             <form className="profile-form" onSubmit={onSubmit}>
+            <h1>Profile</h1>
                 <input type="text" placeholder="Username" name="username" value={formData.username} onChange={onChange} required />
                 <input type="email" placeholder="Email Address" name="email" value={formData.email} onChange={onChange} required />
                 <button type="submit">Update Profile</button>
+                <button onClick={onDelete} className="delete-button">Delete Account</button>
             </form>
             {message && <p className="message">{message}</p>}
-            <button onClick={onDelete} className="delete-button">Delete Account</button>
         </div>
     );
 }

@@ -6,7 +6,8 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true }, // idem pour l'email
     password: { type: String, required: true }, // le mdp est obligatoire
     resetPasswordToken: String, // Token de réinitialisation de mdp
-    resetPasswordExpire: Date // date d'expiration du token de réinitialisation
+    resetPasswordExpire: Date, // date d'expiration du token de réinitialisation
+    role: { type: String, enum: ['Donateur', 'Chercheur'], default: 'Donateur'} // champ pour le rôle des utilisateurs
 });
 
 module.exports = mongoose.model('User', userSchema); // exportation du modèle utilisateur basé sur le schéma

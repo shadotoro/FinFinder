@@ -1,6 +1,7 @@
 import React, { useState } from 'react'; // Importation de React et du hook useState
 import axios from 'axios';  // import de la bibli axios pour les requests HTTP
 import { toast } from 'react-toastify';  // import de la bibli toastify pour afficher des notifs
+import './Login.css';
 
 function Login() {
     // définition de l'état initial pour le formulaire de co' et les erreurs

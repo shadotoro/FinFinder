@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import SignUp from './components/SignUp';
+import SignUpDonateur from './components/SignUpDonateur';
+import SignUpChercheur from './components/SignUpChercheur';
 import Login from './components/Login';
 import Profile from './components/Profile';
 import Navigation from './components/Navigation';
@@ -22,7 +23,9 @@ function App() {
                     {/* Redirige vers /profile si l'utilisateur est authentifié, sinon vers /login */}
                     <Route path="/" element={<Home />} />
                     {/* Route pour la page d'inscription */}
-                    <Route path="/signup" element={<><Navigation /><SignUp /></>} />
+                    <Route path="/signup-donateur" element={<><Navigation /><SignUpDonateur /></>} />
+                    {/* Route pour la page d'inscription chercheur */}
+                    <Route path="/signup-chercheur" element={<><Navigation /><SignUpChercheur /></>} />
                     {/* Route pour la page de connexion */}
                     <Route path="/login" element={<><Navigation /><Login /></>} />
                     {/* Route pour le profil utilisateur, protégée par une route privée */}
