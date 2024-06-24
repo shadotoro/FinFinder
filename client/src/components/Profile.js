@@ -4,12 +4,12 @@ import { toast } from 'react-toastify';
 import './Profile.css';
 
 function Profile() {
-    const [user, setUser] = useState(null); // state pour stocker les infos de l'utilisateur
-    const [formData, setFormData] = useState({ username: '', email: '' });  //gére les données du form
-    const [error, setError] = useState('');  // gére les erreurs
-    const [message, setMessage] = useState('');  // affiche des msgs
+    const [user, setUser] = useState(null); // State pour stocker les informations de l'utilisateur
+    const [formData, setFormData] = useState({ username: '', email: '' }); // State pour gérer les données du formulaire
+    const [error, setError] = useState(''); // State pour gérer les erreurs
+    const [message, setMessage] = useState(''); // State pour afficher des messages
 
-    useEffect(() => { // useEffect récupére les infos de profil de l'utilisateur lors du montage du composant
+    useEffect(() => { // useEffect pour récupérer les informations de profil de l'utilisateur lors du montage du composant
         const fetchUserProfile = async () => {
             try {
                 const config = {
@@ -18,13 +18,13 @@ function Profile() {
                     }
                 };
                 const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3001';
-                const res = await axios.get(`${apiUrl}/api/users/profile`, config); // requête GET pour récupérer les infos de l'utilisateur
+                const res = await axios.get(`${apiUrl}/api/users/profile`, config); // Requête GET pour récupérer les informations de l'utilisateur
                 // Met à jour les states user et formData avec les données récupérées
                 setUser(res.data);
-                setFormData({ username: res.data.username, email: res.data.email });
+                setFormData({ username: res.data.username, email: res.data.email, profileImage: res.data.profileImage || '' });
                 toast.success('Profile fetched successfully');
             } catch (err) {
-                //gére les erreurs lors de la récupération du profil
+                // Gère les erreurs lors de la récupération du profil
                 setError(err.response?.data?.msg || 'Error fetching profile');
                 toast.error('Error fetching profile');
                 console.error(err.response?.data);
@@ -34,26 +34,35 @@ function Profile() {
     }, []);
     // Gestion des changements dans les champs de formulaire
     const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
-    // gestion image de profil
+    // Gestion du changement de l'image de profil
     const onImageChange = e => setFormData({ ...formData, profileImage: e.target.files[0] });
-    // Gestion de la soumission du form de mise à jour du profil
+    // Gestion de la soumission du formulaire de mise à jour du profil
     const onSubmit = async e => {
         e.preventDefault();
         try {
+            const formDataToSend = new FormData();
+            formDataToSend.append('username', formData.username);
+            formDataToSend.append('email', formData.email);
+            if (formData.profileImage) {
+                formDataToSend.append('profileImage', formData.profileImage);
+            }
+
             const config = {
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'multipart/form-data',
                     'x-auth-token': localStorage.getItem('token')
                 }
             };
-            const body = JSON.stringify(formData);
+
             const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3001';
-            // requête PUT pour mettre à jour le profil
-            const res = await axios.put(`${apiUrl}/api/auth/profile`, body, config);
-            // met à jour le msg avec la réponse de l'API
+            // Requête PUT pour mettre à jour le profil
+            const res = await axios.put(`${apiUrl}/api/auth/profile`, formDataToSend, config);
+            // Met à jour le message avec la réponse de l'API
             setMessage(res.data.msg);
+            // Met à jour le profil utilisateur localement
+            setUser({ ...user, profileImage: res.data.profileImage });
         } catch (err) {
-            // gére les erreurs lors de la mise à jour du profil
+            // Gère les erreurs lors de la mise à jour du profil
             setError(err.response?.data?.msg || 'Update failed');
             console.error(err.response?.data);
         }
@@ -67,33 +76,33 @@ function Profile() {
                 }
             };
             const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3001';
-            // requête DELETE pour supprimer le compte
+            // Requête DELETE pour supprimer le compte
             const res = await axios.delete(`${apiUrl}/api/auth/profile`, config);
-            // met à jour le msg avec la réponse de l'API
+            // Met à jour le message avec la réponse de l'API
             setMessage(res.data.msg);
-            // supprime le token de l'utilisateur
+            // Supprime le token de l'utilisateur
             localStorage.removeItem('token');
         } catch (err) {
-            // gére les erreurs lors de la suppression du compte
+            // Gère les erreurs lors de la suppression du compte
             setError(err.response?.data?.msg || 'Delete failed');
             console.error(err.response?.data);
         }
     };
-    // affiche un msg en cas d'erreur
+    // Affiche un message en cas d'erreur
     if (error) {
         return <div className="error">{error}</div>;
     }
-    // affiche un msg de chargement si les données de l'utilisateur ne sont pas encore chargées
+    // Affiche un message de chargement si les données de l'utilisateur ne sont pas encore chargées
     if (!user) {
         return <div>Loading...</div>;
     }
-    // affiche le composant Profile
+    // Affiche le composant Profile
     return (
         <div className="profile-container">
             <form className="profile-form" onSubmit={onSubmit}>
-            <h1>Profile</h1>
-            <div className="profile-header">
-                    <img src={formData.profileImage || 'default-profile.png'} alt="Profile" className="profile-image" />
+                <h1>Profile</h1>
+                <div className="profile-header">
+                    <img src={user.profileImage ? `http://localhost:3001/${user.profileImage}` : 'default-profile.png'} alt="Profile" className="profile-image" />
                     <input type="file" name="profileImage" onChange={onImageChange} accept="image/*" />
                 </div>
                 <input type="text" placeholder="Username" name="username" value={formData.username} onChange={onChange} required />

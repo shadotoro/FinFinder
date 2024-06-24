@@ -1,70 +1,70 @@
-const express = require('express'); // import de express
-const router = express.Router(); // création d'un router express
-const User = require('../models/User'); // import de model user
-const jwt = require('jsonwebtoken'); // import de jsonwebtoken
-const crypto = require('crypto'); // import de crypto pour générer des jetons sécurisés
-const nodemailer = require('nodemailer'); // import de nodemailer pour l'envoye de mails
-const auth = require('../middleware/auth'); // import du middleware auth
+const express = require('express');
+const router = express.Router();
+const User = require('../models/User');
+const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+const auth = require('../middleware/auth');
+const multer = require('multer');
+const path = require('path');
+
+// Configuration de multer pour le stockage des images
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/');
+    },
+    filename: function (req, file, cb) {
+        cb(null, `${req.user.id}-${Date.now()}${path.extname(file.originalname)}`);
+    }
+});
+
+const upload = multer({ storage: storage });
+
+// Route pour mettre à jour le profil avec ou sans image
+router.put('/profile', auth, upload.single('profileImage'), async (req, res) => {
+    const { username, email } = req.body;
+
+    try {
+        let user = await User.findById(req.user.id);
+
+        if (!user) {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+
+        user.username = username || user.username;
+        user.email = email || user.email;
+        if (req.file) {
+            user.profileImage = req.file.path;
+        }
+
+        await user.save();
+        res.json({ msg: 'Profile updated successfully' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+});
+
 // Route pour l'inscription des donateurs
 router.post('/signup-donateur', async (req, res) => {
-    const { username, password, email } = req.body; // extraction des données de la request
+    const { username, password, email } = req.body;
     console.log('Signup request:', { username, email, password, role: 'Donateur' });
     try {
-        // vérifie si l'utilisateur existe déjà dans la bdd
         let user = await User.findOne({ email });
         if (user) {
             console.log('User already exists:', email);
             return res.status(400).json({ msg: 'User already exists' });
         }
-        // création d'un nouvel utilisateur
+
         user = new User({
             username,
             email,
             password,
             role: 'Donateur'
         });
-        // enregistrement du nouvel utilisateur dans la bdd
-        await user.save();
-        console.log('User saved:', user); // log des infos de l'utilisateur enregistré
 
-        const payload = { // création d'un payload pour le token JWT
-            user: {
-                id: user.id,
-                role: user.role
-            }
-        };
-        // généération d'un token
-        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 36000 }, (err, token) => {
-            if (err) throw err;
-            res.json({ token }); // retourne le token en réponse
-        });
-    } catch (err) {
-        console.error('Error during signup:', err.message); // log des erreurs éventuelles
-        res.status(500).send('Server error'); // retourne une erreur de serveur en cas de problème
-    }
-});
-
-// route pour l'inscription des chercheurs
-router.post('/signup-chercheur', async (req, res) => {
-    const { username, password, email } = req.body; // extraction des données de la request
-    console.log('Signup request:', { username, email, password, role: 'Chercheur' });
-    try {
-        // vérifie si l'utilisateur existe déjà dans la bdd
-        let user = await User.findOne({ email });
-        if (user) {
-            console.log('User already exists:', email);
-            return res.status(400).json({ msg: 'User already exists' });
-        }
-        // création d'un nouvel utilisateur
-        user = new User({
-            username,
-            email,
-            password,
-            role: 'Chercheur'
-        });
-        
         await user.save();
-        console.log('User savec', user);
+        console.log('User saved:', user);
 
         const payload = {
             user: {
@@ -73,28 +73,66 @@ router.post('/signup-chercheur', async (req, res) => {
             }
         };
 
-            jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 36000 }, (err, token) => {
-                if (err) throw err;
-                console.log('Token generated:', token)
-                res.json({ token });
-            });            
+        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 36000 }, (err, token) => {
+            if (err) throw err;
+            res.json({ token });
+        });
     } catch (err) {
         console.error('Error during signup:', err.message);
         res.status(500).send('Server error');
     }
 });
 
-// route pour la co' d'un utilisateur
-router.post('/login', async (req, res) => {
-    const { email, password } = req.body; // extraction de données de la request
+// Route pour l'inscription des chercheurs
+router.post('/signup-chercheur', async (req, res) => {
+    const { username, password, email } = req.body;
+    console.log('Signup request:', { username, email, password, role: 'Chercheur' });
     try {
-        let user = await User.findOne({ email }); // vérifie si l'utilisateur existe dans la bdd
+        let user = await User.findOne({ email });
+        if (user) {
+            console.log('User already exists:', email);
+            return res.status(400).json({ msg: 'User already exists' });
+        }
+
+        user = new User({
+            username,
+            email,
+            password,
+            role: 'Chercheur'
+        });
+
+        await user.save();
+        console.log('User saved:', user);
+
+        const payload = {
+            user: {
+                id: user.id,
+                role: user.role
+            }
+        };
+
+        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 36000 }, (err, token) => {
+            if (err) throw err;
+            console.log('Token generated:', token);
+            res.json({ token });
+        });
+    } catch (err) {
+        console.error('Error during signup:', err.message);
+        res.status(500).send('Server error');
+    }
+});
+
+// Route pour la connexion des utilisateurs
+router.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        let user = await User.findOne({ email });
         if (!user) {
             console.log('User not found:', email);
             return res.status(400).json({ msg: 'Invalid credentials' });
         }
 
-        const isMatch = password === user.password; // vérifie la correspondance des mdp
+        const isMatch = password === user.password;
         console.log('Password match:', isMatch);
 
         if (!isMatch) {
@@ -121,24 +159,23 @@ router.post('/login', async (req, res) => {
 
 // Route pour demander une réinitialisation de mot de passe
 router.post('/forgot-password', async (req, res) => {
-    const { email } = req.body; // extract email request
+    const { email } = req.body;
     try {
-        let user = await User.findOne({ email }); // vérif user ds bdd
+        let user = await User.findOne({ email });
         if (!user) {
             return res.status(400).json({ msg: 'User not found' });
         }
 
-        const resetToken = crypto.randomBytes(20).toString('hex'); // génération d'un token de réinitialisation
-        const resetPasswordExpire = Date.now() + 3600000; // 1 heure (expiration)
+        const resetToken = crypto.randomBytes(20).toString('hex');
+        const resetPasswordExpire = Date.now() + 3600000; // 1 heure
 
-        // mise à jour de l'utilisateur avec le jeton et la date d'expiration
-        user.resetPasswordToken = resetToken; 
+        user.resetPasswordToken = resetToken;
         user.resetPasswordExpire = resetPasswordExpire;
         await user.save();
 
-        const resetUrl = `http://${req.headers.host}/api/auth/reset-password/${resetToken}`; // construction de l'url de réinitialisation
+        const resetUrl = `http://${req.headers.host}/api/auth/reset-password/${resetToken}`;
 
-        const transporter = nodemailer.createTransport({ // config du transporteur du mail
+        const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
                 user: process.env.EMAIL,
@@ -146,14 +183,14 @@ router.post('/forgot-password', async (req, res) => {
             },
         });
 
-        const mailOptions = { // options du mail
+        const mailOptions = {
             to: user.email,
             from: process.env.EMAIL,
             subject: 'Password reset',
             text: `You are receiving this email because you (or someone else) have requested the reset of a password. Please click on the following link, or paste this into your browser to complete the process: \n\n ${resetUrl}`,
         };
 
-        transporter.sendMail(mailOptions, (err, response) => { // envoi du mail
+        transporter.sendMail(mailOptions, (err, response) => {
             if (err) {
                 console.error('Error sending email:', err.message);
                 return res.status(500).send('Email could not be sent');
@@ -168,10 +205,10 @@ router.post('/forgot-password', async (req, res) => {
 
 // Route pour réinitialiser le mot de passe à partir du jeton
 router.post('/reset-password/:resetToken', async (req, res) => {
-    const { resetToken } = req.params; // extraction du jeton de la request
-    const { password } = req.body; // extract du nouveau mdp de la request
+    const { resetToken } = req.params;
+    const { password } = req.body;
 
-    try { // vérif si le jeton est valide et n'a pas expiré
+    try {
         let user = await User.findOne({
             resetPasswordToken: resetToken,
             resetPasswordExpire: { $gt: Date.now() },
@@ -180,7 +217,7 @@ router.post('/reset-password/:resetToken', async (req, res) => {
         if (!user) {
             return res.status(400).json({ msg: 'Invalid or expired token' });
         }
-        // mise à jour du mdp de l'utilisateur
+
         user.password = password;
         user.resetPasswordToken = undefined;
         user.resetPasswordExpire = undefined;
@@ -193,43 +230,20 @@ router.post('/reset-password/:resetToken', async (req, res) => {
     }
 });
 
-// route de suppression de compte
+// Route de suppression de compte
 router.delete('/delete-account', async (req, res) => {
-    try { // recherche de l'utilisateur par ID
-        let user = await User.findById(req.user.id);
-        if (!user) {
-            return res.status(404).json({ msg: 'User not found'});
-        }
-        // suppression de l'utilisateur
-        await user.remove();
-        res.json({ msg: 'User removed'});
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server error');
-    }
-});
-
-// route de mise à jour du profil
-router.put('/profile', auth, async (req, res) => {
-    const { username, email, profileImage } = req.body;
-
     try {
         let user = await User.findById(req.user.id);
-
         if (!user) {
-            return res.status(404).json({ msg: 'User not found'});
+            return res.status(404).json({ msg: 'User not found' });
         }
 
-        user.username = username || user.username;
-        user.email = email || user.email;
-        user.profileImage = profileImage || user.profileImage;
-
-        await user.save();
-        res.json({ msg: 'Profile updated successfully'});
+        await user.remove();
+        res.json({ msg: 'User removed' });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server error');
     }
 });
 
-module.exports = router; // export pour utilisation dans le serveur principal
+module.exports = router;

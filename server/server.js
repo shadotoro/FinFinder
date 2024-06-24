@@ -9,6 +9,7 @@ const helmet = require("helmet");
 const cors = require("cors");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
+const path = require("path");
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
 const homeRoutes = require('./routes/homeRoutes');
@@ -19,6 +20,7 @@ app.use(express.json()); // parser les request avec payload JSON
 app.use(helmet()); // sécuriser les en-têtes HTTP
 app.use(cors()); // activer les request cross-origin
 app.use(morgan('combined')); // logger les request HTTP
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // utiliser les routes définies
 app.use('/api/users', userRoutes); // routes pour les utilisateurs
 app.use('/api/auth', authRoutes); // routes pour l'authentification
