@@ -34,6 +34,8 @@ function Profile() {
     }, []);
     // Gestion des changements dans les champs de formulaire
     const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
+    // gestion image de profil
+    const onImageChange = e => setFormData({ ...formData, profileImage: e.target.files[0] });
     // Gestion de la soumission du form de mise à jour du profil
     const onSubmit = async e => {
         e.preventDefault();
@@ -90,11 +92,21 @@ function Profile() {
         <div className="profile-container">
             <form className="profile-form" onSubmit={onSubmit}>
             <h1>Profile</h1>
+            <div className="profile-header">
+                    <img src={formData.profileImage || 'default-profile.png'} alt="Profile" className="profile-image" />
+                    <input type="file" name="profileImage" onChange={onImageChange} accept="image/*" />
+                </div>
                 <input type="text" placeholder="Username" name="username" value={formData.username} onChange={onChange} required />
                 <input type="email" placeholder="Email Address" name="email" value={formData.email} onChange={onChange} required />
                 <button type="submit">Update Profile</button>
-                <button onClick={onDelete} className="delete-button">Delete Account</button>
             </form>
+            <div className="profile-stats">
+                <h2>Stats</h2>
+                <p>Date d'inscription : {new Date(user.createdAt).toLocaleDateString()}</p>
+                <p>Projets financés : {user.projectsFunded.length}</p>
+                <p>Projets soumis : {user.projectsSubmitted.length}</p>
+            </div>
+            <button onClick={onDelete} className="delete-button">Delete Account</button>
             {message && <p className="message">{message}</p>}
         </div>
     );

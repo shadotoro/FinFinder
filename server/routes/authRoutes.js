@@ -4,7 +4,7 @@ const User = require('../models/User'); // import de model user
 const jwt = require('jsonwebtoken'); // import de jsonwebtoken
 const crypto = require('crypto'); // import de crypto pour générer des jetons sécurisés
 const nodemailer = require('nodemailer'); // import de nodemailer pour l'envoye de mails
-
+const auth = require('../middleware/auth'); // import du middleware auth
 // Route pour l'inscription des donateurs
 router.post('/signup-donateur', async (req, res) => {
     const { username, password, email } = req.body; // extraction des données de la request
@@ -203,6 +203,29 @@ router.delete('/delete-account', async (req, res) => {
         // suppression de l'utilisateur
         await user.remove();
         res.json({ msg: 'User removed'});
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+});
+
+// route de mise à jour du profil
+router.put('/profile', auth, async (req, res) => {
+    const { username, email, profileImage } = req.body;
+
+    try {
+        let user = await User.findById(req.user.id);
+
+        if (!user) {
+            return res.status(404).json({ msg: 'User not found'});
+        }
+
+        user.username = username || user.username;
+        user.email = email || user.email;
+        user.profileImage = profileImage || user.profileImage;
+
+        await user.save();
+        res.json({ msg: 'Profile updated successfully'});
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server error');
