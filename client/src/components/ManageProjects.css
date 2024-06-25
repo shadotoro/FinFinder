@@ -1,0 +1,25 @@
+.manage-projects-container {
+    padding: 20px;
+}
+
+.projects-list {
+    list-style: none;
+    padding: 0;
+}
+
+.project-item {
+    background: whitesmoke;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+    margin-bottom: 15px;
+}
+
+.project-item h2 {
+    margin: 0 0 10px;
+    color: #333;
+}
+
+.project-item p {
+    margin: 5px 0;
+}

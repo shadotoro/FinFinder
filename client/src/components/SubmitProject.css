@@ -1,0 +1,45 @@
+.submit-project-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #d3e7f6;
+}
+
+.submit-project-form {
+    background: whitesmoke;
+    padding: 20rem;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+    width: 100%;
+    max-width: 400px;
+}
+
+.submit-project-form h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.submit-project-form input,
+.submit-project-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 4px solid #ccc;
+    border-radius: 6px;
+}
+
+.submit-project-form button {
+    background-color: #28a745;
+    color: whitesmoke;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.submit-project-form button:hover {
+    background-color: #218838;
+}

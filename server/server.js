@@ -13,6 +13,7 @@ const path = require("path");
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
 const homeRoutes = require('./routes/homeRoutes');
+const projectRoutes = require('./routes/projectRoutes');
 
 const app = express(); // initialise express
 // utilise les middlewares nécessaires
@@ -25,6 +26,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/users', userRoutes); // routes pour les utilisateurs
 app.use('/api/auth', authRoutes); // routes pour l'authentification
 app.use('/api/home', homeRoutes); // routes pour la homepage
+app.use('/api/projects', projectRoutes); // routes pour les projets
 
 // route pour tester la co' à la bdd
 app.get('/test-db', async (req, res) => {

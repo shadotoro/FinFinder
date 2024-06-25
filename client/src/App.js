@@ -10,6 +10,8 @@ import UpdateProfile from './components/UpdateProfile';
 import RequestResetPassword from './components/RequestResetPassword';
 import ResetPassword from './components/ResetPassword';
 import Home from './components/Home';
+import SubmitProject from './components/SubmitProject';
+import ManageProjects from './components/ManageProjects';
 
 function App() {
     // Vérifie si l'utilisateur est authentifié en cherchant un jeton dans le stockage local
@@ -36,6 +38,10 @@ function App() {
                     <Route path="/reset-password" element={<><Navigation /><RequestResetPassword /></>} />
                     {/* Route pour la réinitialisation du mot de passe utilisateur avec un jeton */}
                     <Route path="/reset-password/:token" element={<><Navigation /><ResetPassword /></>} />
+                    {/* Route pour la soumission d'un projet*/}
+                    <Route path="/submit-project" element={<PrivateRoute><SubmitProject /></PrivateRoute>} />
+                    {/* Route pour la gestion des projets*/}
+                    <Route path="/manage-projects" element={<PrivateRoute><ManageProjects /></PrivateRoute>} />
                     {/* Route conditionnelle pour afficher le profil si l'utilisateur est authentifié */}
                     {isAuthenticated && <Route path="/profile" element={<Profile />} />}
                     {/* Route conditionnelle pour rediriger vers la page de connexion si non authentifié */}
