@@ -142,14 +142,15 @@ router.post('/login', async (req, res) => {
 
         const payload = {
             user: {
-                id: user.id
+                id: user.id,
+                role: user.role
             }
         };
 
         jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '5h' }, (err, token) => {
             if (err) throw err;
             console.log('Token generated:', token);
-            res.json({ token });
+            res.json({ token, role: user.role });
         });
     } catch (err) {
         console.error('Error during login:', err.message);

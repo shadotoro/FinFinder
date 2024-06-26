@@ -33,6 +33,7 @@ function Login() {
             const res = await axios.post(`${apiUrl}/api/auth/login`, body, config);
             // enregistrement du token dans le local storage pour authentification future
             localStorage.setItem('token', res.data.token);
+            localStorage.setItem('role', res.data.role);
             // affichage d'une notification de succès
             toast.success('Login successful');
             // Redirection vers page de profil à implémenter

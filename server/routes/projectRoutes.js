@@ -2,34 +2,51 @@ const express = require('express');
 const router = express.Router();
 const Project = require('../models/Project');
 const auth = require('../middleware/auth');
+const multer = require('multer');
+const path = require('path');
 
-// route pour soumettre un projet
-router.post('/submit', auth, async (req, res) => {
-    const { title, description, category, budget, isFeatured } = req.body;
+// Configuration de multer pour le téléchargement des images
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${req.user.id}-${Date.now()}${path.extname(file.originalname)}`);
+    }
+});
+const upload = multer({ storage });
+
+// Route pour soumettre un projet
+router.post('/', auth, upload.single('image'), async (req, res) => {
+    const { title, description, category, budget } = req.body;
+    const image = req.file.path;
+
     try {
         const newProject = new Project({
             title,
             description,
             category,
             budget,
-            submittedBy: req.user.id
+            image,
+            user: req.user.id
         });
+
         const project = await newProject.save();
         res.json(project);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: error.message });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
     }
-})
+});
 
-// route pour obtenir tous les projets soumis par l'utilisateur
+// Route pour récupérer les projets de l'utilisateur
 router.get('/my-projects', auth, async (req, res) => {
     try {
-        const projets = await Project.find({ submittedBy: req.user.id });
+        const projects = await Project.find({ user: req.user.id });
         res.json(projects);
     } catch (err) {
         console.error(err.message);
-                res.status(500).json({ message: err.message });
+        res.status(500).send('Server error');
     }
 });
 
