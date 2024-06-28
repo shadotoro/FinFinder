@@ -1,6 +1,7 @@
 import React, { useState } from 'react'; // Importation de React et du hook useState
 import axios from 'axios';  // import de la bibli axios pour les requests HTTP
 import { toast } from 'react-toastify';  // import de la bibli toastify pour afficher des notifs
+import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
 function Login() {
@@ -13,6 +14,9 @@ function Login() {
 
     //déstructuration des valeurs d'email et de password depuis formData
     const { email, password } = formData;
+
+    const navigate = useNavigate();
+
     // gestionnaire de changement de champ de formulaire
     const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
     // gestionnaire d'envoi du formulaire de co'
@@ -36,7 +40,7 @@ function Login() {
             localStorage.setItem('role', res.data.role);
             // affichage d'une notification de succès
             toast.success('Login successful');
-            // Redirection vers page de profil à implémenter
+            navigate('/profile'); // redirection vers la page d'accueil après authentification
         } catch (err) {
             // affichage d'une notification d'erreur s'il y a eu une erreur lors de la requête
             setError(err.response?.data?.msg || 'Login failed');

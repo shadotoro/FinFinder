@@ -42,9 +42,9 @@ function App() {
                     {isAuthenticated && role === 'Chercheur' && (
                         <>
                             {/* Route pour la soumission d'un projet*/}
-                            <Route path="/submit-project" element={<PrivateRoute><SubmitProject /></PrivateRoute>} />
+                            <Route path="/submit-project" element={<PrivateRoute><Navigation /><SubmitProject /></PrivateRoute>} />
                             {/* Route pour la gestion des projets*/}
-                            <Route path="/manage-projects" element={<PrivateRoute><ManageProjects /></PrivateRoute>} />
+                            <Route path="/manage-projects" element={<PrivateRoute><Navigation /><ManageProjects /></PrivateRoute>} />
                         </>
                     )}
                 

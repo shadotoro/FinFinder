@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 import './Profile.css';
 
 function Profile() {
@@ -8,6 +9,7 @@ function Profile() {
     const [formData, setFormData] = useState({ username: '', email: '' }); // State pour gérer les données du formulaire
     const [error, setError] = useState(''); // State pour gérer les erreurs
     const [message, setMessage] = useState(''); // State pour afficher des messages
+    const navigate = useNavigate();
 
     useEffect(() => { // useEffect pour récupérer les informations de profil de l'utilisateur lors du montage du composant
         const fetchUserProfile = async () => {
@@ -67,6 +69,7 @@ function Profile() {
             console.error(err.response?.data);
         }
     };
+
     // Gestion de la suppression du compte
     const onDelete = async () => {
         try {
@@ -82,12 +85,21 @@ function Profile() {
             setMessage(res.data.msg);
             // Supprime le token de l'utilisateur
             localStorage.removeItem('token');
+            localStorage.removeItem('role');
+            navigate('/login');
         } catch (err) {
             // Gère les erreurs lors de la suppression du compte
             setError(err.response?.data?.msg || 'Delete failed');
             console.error(err.response?.data);
         }
     };
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('role');
+        navigate('/Home');
+    };
+
     // Affiche un message en cas d'erreur
     if (error) {
         return <div className="error">{error}</div>;
@@ -96,6 +108,7 @@ function Profile() {
     if (!user) {
         return <div>Loading...</div>;
     }
+
     // Affiche le composant Profile
     return (
         <div className="profile-container">
@@ -117,6 +130,7 @@ function Profile() {
             </div>
             <button onClick={onDelete} className="delete-button">Delete Account</button>
             {message && <p className="message">{message}</p>}
+            <button onClick={handleLogout} className="logout-button">Logout</button>
         </div>
     );
 }

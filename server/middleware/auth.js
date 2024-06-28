@@ -10,6 +10,7 @@ module.exports = function(req, res, next) {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET); // vérif et décodage du jeton avec la clé secrète JWT
         req.user = decoded.user; // ajout de l'utilisateur décodé à l'objet de la request
+        console.log('user authenticated:', req.user);
         next(); // appel du middleware suivant dans la chaîne
     } catch (err) {
         res.status(401).json({ msg: 'Token is not valid' }); // si la vérif échoue, renvoye une réponse 401

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const Project = require('../models/Project');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
@@ -232,19 +233,28 @@ router.post('/reset-password/:resetToken', async (req, res) => {
 });
 
 // Route de suppression de compte
-router.delete('/delete-account', async (req, res) => {
+router.delete('/profile', auth, async (req, res) => {
     try {
-        let user = await User.findById(req.user.id);
+        const userId = req.user.id;
+        console.log('User ID:', userId);
+
+        // Suppression des projets associés à l'utilisateur
+        const result = await Project.deleteMany({ user: userId });
+        console.log('Deleted projects:', result);
+
+        // Suppression de l'utilisateur
+        const user = await User.findByIdAndDelete(userId);
         if (!user) {
             return res.status(404).json({ msg: 'User not found' });
         }
 
-        await user.remove();
-        res.json({ msg: 'User removed' });
+        res.json({ msg: 'User and associated projects removed' });
     } catch (err) {
-        console.error(err.message);
+        console.error('Error during deletion:', err.message);
         res.status(500).send('Server error');
     }
 });
+
+
 
 module.exports = router;
