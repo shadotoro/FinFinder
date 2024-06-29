@@ -151,7 +151,7 @@ router.post('/login', async (req, res) => {
         jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '5h' }, (err, token) => {
             if (err) throw err;
             console.log('Token generated:', token);
-            res.json({ token, role: user.role });
+            res.json({ token, user: { id: user.id, role: user.role } });
         });
     } catch (err) {
         console.error('Error during login:', err.message);
@@ -254,7 +254,5 @@ router.delete('/profile', auth, async (req, res) => {
         res.status(500).send('Server error');
     }
 });
-
-
 
 module.exports = router;

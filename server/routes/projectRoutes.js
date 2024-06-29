@@ -50,4 +50,35 @@ router.get('/my-projects', auth, async (req, res) => {
     }
 });
 
+// route pour récupérer les projets en attente de validation
+router.get('/pending', auth, async (req, res) => {
+    try {
+        const projects = await Project.find({ status: 'Pending'});
+        res.json(projects);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+});
+
+
+// route pour valider un projet
+router.put('/validate-project/:id', auth, async (req, res) => {
+    const { status } = req.body;
+    try {
+        let project = await Project.findById(req.params.id);
+
+        if (!project) {
+            return res.status(404).json({ msg: 'Project not found' });
+        }
+
+        project.status = status;
+        await project.save();
+        res.json(project);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+});
+
 module.exports = router;

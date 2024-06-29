@@ -1,0 +1,29 @@
+.admin-dashboard-container {
+    padding: 20px;
+}
+
+.projects-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.project-item {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.project-item h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.project-item p {
+    margin: 5px 0;
+}
+
+.project-item button {
+    margin-right: 10px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
