@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const auth = require('../middleware/auth');
+const authAdmin = require('../middleware/authAdmin');
 const multer = require('multer');
 const path = require('path');
 
@@ -254,5 +255,18 @@ router.delete('/profile', auth, async (req, res) => {
         res.status(500).send('Server error');
     }
 });
+
+// route admin protégée
+router.use(auth, authAdmin);
+// route admin pour gérer les projets
+router.get('/admin/projects', async (req, res) => {
+    try {
+        const projects = await Project.find();
+        res.json(projects);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+})
 
 module.exports = router;

@@ -6,6 +6,7 @@ import './Profile.css';
 
 function Profile() {
     const [user, setUser] = useState(null); // State pour stocker les informations de l'utilisateur
+    const [projects, setProjects] = useState([]); // stocke les projets de l'utilisateur
     const [formData, setFormData] = useState({ username: '', email: '' }); // State pour gérer les données du formulaire
     const [error, setError] = useState(''); // State pour gérer les erreurs
     const [message, setMessage] = useState(''); // State pour afficher des messages
@@ -22,7 +23,8 @@ function Profile() {
                 const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3001';
                 const res = await axios.get(`${apiUrl}/api/users/profile`, config); // Requête GET pour récupérer les informations de l'utilisateur
                 // Met à jour les states user et formData avec les données récupérées
-                setUser(res.data);
+                setUser(res.data.user);
+                setProjects(res.data.projects);
                 setFormData({ username: res.data.username, email: res.data.email, profileImage: res.data.profileImage || '' });
                 toast.success('Profile fetched successfully');
             } catch (err) {
@@ -32,8 +34,28 @@ function Profile() {
                 console.error(err.response?.data);
             }
         };
+
+        const fetchUserProjects = async () => {
+            try {
+                const config = {
+                    headers: {
+                        'x-auth-token': localStorage.getItem('token')
+                    }
+                };
+                const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+                const res = await axios.get(`${apiUrl}/api/projects/my-projects`, config);
+                setProjects(res.data);
+            } catch (err) {
+                setError(err.response?.data?.msg || 'Error fetching projects');
+                toast.error('Error fetching projects');
+                console.error(err.response?.data);
+            }
+        };
+
         fetchUserProfile();
+        fetchUserProjects();
     }, []);
+    
     // Gestion des changements dans les champs de formulaire
     const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
     // Gestion du changement de l'image de profil
@@ -125,8 +147,13 @@ function Profile() {
             <div className="profile-stats">
                 <h2>Stats</h2>
                 <p>Date d'inscription : {new Date(user.createdAt).toLocaleDateString()}</p>
-                <p>Projets financés : {user.projectsFunded.length}</p>
-                <p>Projets soumis : {user.projectsSubmitted.length}</p>
+                {user.role === 'Donateur' && (
+                    <>Projets financés : {user.projectsFunded.length}</>                    
+                )}
+                {user.role === 'Chercheur' && (
+                    <>Projets soumis : {projects.filter(project => project.status !== 'Accepted').length}</>,
+                    <>Projets acceptés : {projects.filter(project => project.status === 'Accepted').length}</>                    
+                )}
             </div>
             <button onClick={onDelete} className="delete-button">Delete Account</button>
             {message && <p className="message">{message}</p>}

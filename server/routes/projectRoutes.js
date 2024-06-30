@@ -4,6 +4,7 @@ const Project = require('../models/Project');
 const auth = require('../middleware/auth');
 const multer = require('multer');
 const path = require('path');
+const User = require('../models/User');
 
 // Configuration de multer pour le téléchargement des images
 const storage = multer.diskStorage({
@@ -32,6 +33,9 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
         });
 
         const project = await newProject.save();
+
+        await User.findByIdAndUpdate(req.user.id, { $push: { projectsSubmitted: project._id } });
+        
         res.json(project);
     } catch (err) {
         console.error(err.message);
@@ -74,6 +78,11 @@ router.put('/validate-project/:id', auth, async (req, res) => {
 
         project.status = status;
         await project.save();
+
+        if (status === 'Accepted') {
+            await User.findByIdAndUpdate(project.user, { $push: { projectsAccepted: project._id } });
+        }
+        
         res.json(project);
     } catch (err) {
         console.error(err.message);

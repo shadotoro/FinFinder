@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 import './SignUpChercheur.css';
 
 function SignUpChercheur() {
@@ -12,6 +13,7 @@ function SignUpChercheur() {
     const [error, setError] = useState('');
 
     const { username, password, email } = formData;
+    const navigate = useNavigate();
     const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
     const onSubmit = async e => {
         e.preventDefault();
@@ -23,7 +25,7 @@ function SignUpChercheur() {
             };
             const body = JSON.stringify({ ...formData, role: 'Chercheur' });
             const apiUrl = process.env.REACT_APP_API_URL;
-            const res = await axios.post(`${apiUrl}/api/auth/signup`, body, config);
+            const res = await axios.post(`${apiUrl}/api/auth/signup-chercheur`, body, config);
             console.log(res.data);
             toast.success('Registration successful');
         } catch (err) {

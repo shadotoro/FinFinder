@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema({
     profileImage: { type: String },
     projectsFunded: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project' }],
     projectsSubmitted: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project' }],
+    projectsAccepted: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project' }],
     createdAt: { type: Date, default: Date.now }
 });
 
