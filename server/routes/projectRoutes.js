@@ -90,4 +90,46 @@ router.put('/validate-project/:id', auth, async (req, res) => {
     }
 });
 
+// Route pour mettre à jour un projet
+router.put('/:id', auth, upload.single('image'), async (req, res) => {
+    const { title, description, category, budget } = req.body;
+    const updateData = { title, description, category, budget };
+
+    if (req.file) {
+        updateData.image = req.file.path;
+    }
+
+    try {
+        const project = await Project.findByIdAndUpdate(req.params.id, updateData, { new: true });
+
+        if (!project) {
+            return res.status(404).json({ msg: 'Project not found' });
+        }
+
+        res.json(project);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+});
+
+
+// Route pour supprimer un projet
+router.delete('/:id', auth, async (req, res) => {
+    try {
+        const project = await Project.findById(req.params.id);
+
+        if (!project) {
+            return res.status(404).json({ msg: 'Project not found' });
+        }
+
+        await Project.findByIdAndDelete(req.params.id);
+        res.json({ msg: 'Project removed' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+});
+
+
 module.exports = router;
