@@ -1,8 +1,27 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 import '../components/Home.css';
 
 function Home() {
+    const [projects, setProjects] = useState([]);
+    const [error, setError] = useState('');
+
+    useEffect(() => {
+        const fetchAcceptedProjects = async () => {
+            try {
+                const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+                const res = await axios.get(`${apiUrl}/api/projects/accepted-projects`);
+                console.log(res.data);
+                setProjects(res.data);
+            } catch (err) {
+                setError(err.response?.data?.msg || 'Error fetching projects');
+                console.error(err.response?.data);
+            }
+        };
+        fetchAcceptedProjects();
+    }, []);
+
     return (
         <div className="home-container">
             <header className="home-header">
@@ -131,23 +150,32 @@ function Home() {
                 </section>
                 <section className="featured-projects">
                     <h2>Projets phares</h2>
-                    <div className="featured-project">
-                        <img src="https://cdn.pixabay.com/photo/2015/04/23/22/00/turtle-736885__340.jpg" alt="projet 1" />
-                        <div className="featured-project-info">
-                            <h3>Requin 1</h3>
-                            <p>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                            </p>
-                        </div>
+                    <div className="featured-projects-list">
+                        {error && <p className="error">{error}</p>}
+                        {projects.map(project => (
+                            <div key={project._id} className="featured-project">
+                                <img src={`http://localhost:3001/${project.image}`} alt={project.title} />
+                                <div className="featured-project-info">
+                                    <h3>{project.title}</h3>
+                                    <p>{project.description}</p>
+                                    <Link to={`/projects/${project._id}`}>Voir les détails</Link>
+                                </div>
+                            </div>
+                        ))}
                     </div>
-                    <div className="featured-project">
-                        <img src="https://cdn.pixabay.com/photo/2015/04/23/22/00/turtle-736885__340.jpg" alt="projet 2" />
-                        <div className="featured-project-info">
-                            <h3>Requin 2</h3>
-                            <p>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                            </p>
-                        </div>
+
+                    <div className="featured-projects-list">
+                        {error && <p className="error">{error}</p>}
+                        {projects.map(project => (
+                            <div key={project._id} className="featured-project">
+                                <img src={`http://localhost:3001/${project.image}`} alt={project.title} />
+                                <div className="featured-project-info">
+                                    <h3>{project.title}</h3>
+                                    <p>{project.description}</p>
+                                    <Link to={`/projects/${project._id}`}>Voir les détails</Link>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </section>
             </main>

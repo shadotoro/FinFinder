@@ -13,6 +13,7 @@ import Home from './components/Home';
 import SubmitProject from './components/SubmitProject';
 import ManageProjects from './components/ManageProjects';
 import AdminDashboard from './components/admin/AdminDashboard';
+import ProjectDetails from './components/ProjectDetails';
 
 function App() {
     const isAuthenticated = !!localStorage.getItem('token');
@@ -44,6 +45,7 @@ function App() {
                     {isAuthenticated && <Route path="/profile" element={<PrivateRoute><Navigation /><Profile /></PrivateRoute>} />}
                     {!isAuthenticated && <Route path="/profile" element={<Navigate to="/login" />} />}
                     <Route path="/home" element={<Home />} />
+                    <Route path="/projects/:id" element={<ProjectDetails />} />
                 </Routes>
             </div>
         </Router>
