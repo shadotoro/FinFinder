@@ -16,7 +16,21 @@ const storage = multer.diskStorage({
         cb(null, `${req.user.id}-${Date.now()}${path.extname(file.originalname)}`);
     }
 });
-const upload = multer({ storage });
+
+const fileFilter = (req, file, cb) => {
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    if (allowedTypes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new Error('Only images jpeg, jpg, png, gif are allowed'), false);
+    }
+};
+
+const upload = multer({ 
+    storage,
+    limits: { fileSize: 1024 * 1024 * 5 }, // 5MB max
+    fileFilter
+});
 
 // Route pour soumettre un projet
 router.post('/', auth, upload.single('image'), async (req, res) => {

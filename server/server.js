@@ -2,8 +2,8 @@ const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
 const morgan = require('morgan');
-const mongoose = require('mongoose');
 const path = require('path');
+const mongoose = require('mongoose');
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
 const homeRoutes = require('./routes/homeRoutes');
@@ -23,7 +23,7 @@ app.use(cors(corsOptions));
 app.use(morgan('combined'));
 
 // Servir les fichiers statiques
-app.use('./uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Utiliser les routes définies
 app.use('/api/users', userRoutes);
@@ -51,9 +51,21 @@ app.use((err, req, res, next) => {
     res.status(500).send('Something broke!');
 });
 
-mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log('MongoDB connected successfully'))
-    .catch(err => console.log('Failed to connect to MongoDB', err));
+// Utiliser Mongoose pour se connecter à MongoDB
+const uri = process.env.MONGODB_URI;
+
+mongoose.connect(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}).then(() => {
+    console.log('MongoDB connected successfully');
+    const PORT = process.env.PORT || 3001;
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    });
+}).catch(err => {
+    console.error('Failed to connect to MongoDB', err);
+});
 
 mongoose.connection.on('connected', () => {
     console.log('Mongoose connected to DB');
@@ -65,9 +77,4 @@ mongoose.connection.on('error', (err) => {
 
 mongoose.connection.on('disconnected', () => {
     console.log('Mongoose disconnected from DB');
-});
-
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
 });
