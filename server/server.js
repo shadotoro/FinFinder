@@ -15,6 +15,7 @@ const app = express();
 const corsOptions = {
     origin: 'http://localhost:3000',
     optionsSuccessStatus: 200,
+    credentials: true,
 };
 
 app.use(express.json());
@@ -23,7 +24,7 @@ app.use(cors(corsOptions));
 app.use(morgan('combined'));
 
 // Servir les fichiers statiques
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', cors(corsOptions), express.static(path.join(__dirname, 'uploads')));
 
 // Utiliser les routes définies
 app.use('/api/users', userRoutes);

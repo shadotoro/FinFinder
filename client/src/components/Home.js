@@ -154,7 +154,7 @@ function Home() {
                         {error && <p className="error">{error}</p>}
                         {projects.map(project => (
                             <div key={project._id} className="featured-project">
-                                <img src={`http://localhost:3001/${project.image}`} alt={project.title} />
+                                <img src={`http://localhost:3001/uploads/${project.image}`} alt={project.title} />
                                 <div className="featured-project-info">
                                     <h3>{project.title}</h3>
                                     <p>{project.description}</p>
