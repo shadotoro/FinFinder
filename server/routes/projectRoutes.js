@@ -58,6 +58,17 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
     }
 });
 
+// Route pour récupérer tous les projets
+router.get('/all-projects', auth, async (req, res) => {
+    try {
+        const projects = await Project.find();
+        res.json(projects);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+});
+
 // Route pour récupérer les projets de l'utilisateur
 router.get('/my-projects', auth, async (req, res) => {
     try {

@@ -101,7 +101,7 @@ function ManageProjects() {
                 {projects.map(project => (
                     <li key={project._id} className="project-item">
                         <h2>{project.title}</h2>
-                        <img src={`http://localhost:3001/${project.image}`} alt={project.title} />
+                        <img src={`http://localhost:3001/uploads/${project.image}`} alt={project.title} />
                         <p>{project.description}</p>
                         <p>Category: {project.category}</p>
                         <p>Budget: {project.budget}</p>

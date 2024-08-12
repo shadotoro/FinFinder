@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import '../components/ProjectDetails.css';
 
@@ -10,6 +10,7 @@ function ProjectDetails() {
     const [project, setProject] = useState(null);
     const [amount, setAmount] = useState('');
     const [error, setError] = useState('');
+    const [role, setRole] = useState(null);
 
     useEffect(() => {
         console.log('Project ID:', id);
@@ -23,7 +24,13 @@ function ProjectDetails() {
                 console.error(err.response?.data);
             }
         };
+        const checkUserRole = () => {
+            const userRole = localStorage.getItem('role');
+            setRole(userRole);
+        };
+
         fetchProject();
+        checkUserRole();
     }, [id]);
 
     const handleDonate = async (e) => {
@@ -56,9 +63,18 @@ function ProjectDetails() {
 
     return (
         <div className="project-details-container">
+            <nav className="project-details-navigation">
+                <ul>
+                    <li><Link to="/">Home</Link></li>
+                    <li><Link to="/profile">Profile</Link></li>
+                    {/* Lien vers le dashboard visible uniquement pour les admins */}
+                    {role === 'Admin' && (
+                        <li><Link to="/admin-dashboard">Admin Dashboard</Link></li>
+                    )}
+                </ul>
+            </nav>
             <h1>{project.title}</h1>
             <img src={`http://localhost:3001/${project.image}`} alt={project.title} />
-            console.log(project.image);
             <p>{project.description}</p>
             <p>Category: {project.category}</p>
             <p>Budget: {project.budget}</p>

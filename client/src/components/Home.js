@@ -6,6 +6,7 @@ import '../components/Home.css';
 function Home() {
     const [projects, setProjects] = useState([]);
     const [error, setError] = useState('');
+    const [role, setRole] = useState(null);
 
     useEffect(() => {
         const fetchAcceptedProjects = async () => {
@@ -19,7 +20,14 @@ function Home() {
                 console.error(err.response?.data);
             }
         };
+        
+        const checkUserRole = () => {
+            const userRole = localStorage.getItem('role');
+            setRole(userRole);
+        };
+
         fetchAcceptedProjects();
+        checkUserRole();
     }, []);
 
     return (
@@ -39,6 +47,9 @@ function Home() {
                     <li><Link to="/login">Login</Link></li>
                     <li><Link to="/profile">Profile</Link></li>
                     <li><Link to="/">Home</Link></li>
+                    {role === 'Admin' && (
+                        <li><Link to="/admin-dashboard">Admin Dashboard</Link></li>
+                    )}
                 </ul>
             </nav>
             <main className="home-main">

@@ -28,3 +28,32 @@
     font-size: 20px;
     margin-bottom: 10px;
 }
+
+.project-details-navigation {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 20px;
+}
+
+.project-details-navigation ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.project-details-navigation ul li {
+    margin-right: 15px;
+}
+
+.project-details-navigation ul li a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+}
+
+.project-details-navigation ul li a:hover {
+    color: #0056b3;
+}

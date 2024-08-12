@@ -17,6 +17,9 @@ function Navigation() {
                         <li className="nav-item"><Link className="nav-link" to="/login">Login</Link></li>
                     </>
                 )}
+                {role === 'Admin' && (
+                    <li><Link to="/admin-dashboard">Admin Dashboard</Link></li>
+                )}
                 {isAuthenticated && (
                     <> 
                         <li className="nav-item"><Link className="nav-link" to="/profile">Profile</Link></li>
