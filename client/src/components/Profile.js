@@ -7,7 +7,7 @@ import './Profile.css';
 function Profile() {
     const [user, setUser] = useState(null); // State pour stocker les informations de l'utilisateur
     const [projects, setProjects] = useState([]); // stocke les projets de l'utilisateur
-    const [formData, setFormData] = useState({ username: '', email: '' }); // State pour gérer les données du formulaire
+    const [formData, setFormData] = useState({ username: '', email: '', profileImage: '',}); // State pour gérer les données du formulaire
     const [error, setError] = useState(''); // State pour gérer les erreurs
     const [message, setMessage] = useState(''); // State pour afficher des messages
     const navigate = useNavigate();
@@ -137,7 +137,7 @@ function Profile() {
             <form className="profile-form" onSubmit={onSubmit}>
                 <h1>Profile</h1>
                 <div className="profile-header">
-                    <img src={user.profileImage ? `http://localhost:3001/${user.profileImage}` : 'default-profile.png'} alt="Profile" className="profile-image" />
+                <img src={user.profileImage ? `http://localhost:3001/uploads/${user.profileImage}` : '/default-profile.png'} alt="Profile" className="profile-image" />
                     <input type="file" name="profileImage" onChange={onImageChange} accept="image/*" />
                 </div>
                 <input type="text" placeholder="Username" name="username" value={formData.username} onChange={onChange} required />

@@ -74,7 +74,7 @@ function ProjectDetails() {
                 </ul>
             </nav>
             <h1>{project.title}</h1>
-            <img src={`http://localhost:3001/${project.image}`} alt={project.title} />
+            <img src={`/${project.image}`} alt={project.title} />
             <p>{project.description}</p>
             <p>Category: {project.category}</p>
             <p>Budget: {project.budget}</p>

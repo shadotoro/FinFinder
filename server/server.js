@@ -12,19 +12,29 @@ const projectRoutes = require('./routes/projectRoutes');
 require('dotenv').config({ path: './.env' });
 
 const app = express();
-const corsOptions = {
-    origin: 'http://localhost:3000',
-    optionsSuccessStatus: 200,
-    credentials: true,
-};
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, x-auth-token");
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    res.header("Access-Control-Allow-Credentials", "true");
+    next();
+});
+
+app.options('*', (req, res) => {
+    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, x-auth-token");
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.sendStatus(200); // Répond avec le statut 200 OK pour les requêtes OPTIONS
+});
+
 
 app.use(express.json());
 app.use(helmet());
-app.use(cors(corsOptions));
 app.use(morgan('combined'));
 
 // Servir les fichiers statiques
-app.use('/uploads', cors(corsOptions), express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Utiliser les routes définies
 app.use('/api/users', userRoutes);
