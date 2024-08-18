@@ -137,7 +137,7 @@ function Profile() {
             <form className="profile-form" onSubmit={onSubmit}>
                 <h1>Profile</h1>
                 <div className="profile-header">
-                <img src={user.profileImage ? `http://localhost:3001/uploads/${user.profileImage}` : '/default-profile.png'} alt="Profile" className="profile-image" />
+                <img src={user.profileImage ? `http://localhost:3001/${user.profileImage}` : '/default-profile.png'} alt="Profile" className="profile-image" />
                     <input type="file" name="profileImage" onChange={onImageChange} accept="image/*" />
                 </div>
                 <input type="text" placeholder="Username" name="username" value={formData.username} onChange={onChange} required />
