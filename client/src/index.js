@@ -1,17 +1,21 @@
 import React from 'react'; // React pour la construction de composant
-import ReactDOM from 'react-dom'; // ReactDOM pour rendre les composants React dans le Dom
+import { createRoot } from 'react-dom/client'; // import de createRoot pour React 18
 import './index.css'; // import de styles globaux (à définir d'ailleurs !!! )
 import App from './App'; // composant principal de l'appli 
 import reportWebVitals from './reportWebVitals'; // rapports de performance
 import { ToastContainer } from 'react-toastify'; // conteneur Toast pour les notifs 
 import 'react-toastify/dist/ReactToastify.css'; // styles pour les notifs Toast
-// rendu du composant principal App et du conteneur de Toast dans le DOM
-ReactDOM.render(
+
+// Récupérer l'élément root du DOM
+const container = document.getElementById('root');
+const root = createRoot(container); // Créer un root avec createRoot
+
+// Rendre le composant principal App et le conteneur de Toast
+root.render(
     <React.StrictMode>  
         <App />
         <ToastContainer />
-    </React.StrictMode>,
-    document.getElementById('root') // élément du Dom dans lequel rendre l'application
+    </React.StrictMode>
 );
 
 reportWebVitals(); // Appel de la fonction pour mesurer les perfs de l'app
