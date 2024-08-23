@@ -40,7 +40,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/home', homeRoutes);
-app.use('/api/projects', projectRoutes);
+app.use('/api/projects', require('./routes/projectRoutes'));
 
 app.get('/test-db', async (req, res) => {
     try {

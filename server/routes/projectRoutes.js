@@ -164,6 +164,50 @@ router.put('/:id', auth, upload.single('image'), async (req, res) => {
     }
 });
 
+// Route pour mettre à jour le statut d'un projet
+router.put('/update-status/:id', auth, async (req, res) => {
+    const { status, feedback } = req.body;
+
+    try {
+        let project = await Project.findById(req.params.id);
+
+        if (!project) {
+            return res.status(404).json({ msg: 'Project not found' });
+        }
+
+        project.status = status;
+        project.feedback = feedback || project.feedback;
+
+        await project.save();
+
+        res.json(project);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+});
+
+// Route pour prioriser un projet
+router.put('/update-priority/:id', auth, async (req, res) => {
+    const { priority } = req.body;
+
+    try {
+        let project = await Project.findById(req.params.id);
+
+        if (!project) {
+            return res.status(404).json({ msg: 'Project not found' });
+        }
+
+        project.priority = priority;
+
+        await project.save();
+
+        res.json(project);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+});
 
 // Route pour supprimer un projet
 router.delete('/:id', auth, async (req, res) => {
@@ -225,6 +269,34 @@ router.get('/:id/donations', async (req, res) => {
         res.status(500).send('Server error');
     }
 });
+
+// Route pour ajouter un commentaire à un projet
+router.post('/add-comment/:id', auth, async (req, res) => {
+    try {
+        const { text } = req.body; // Récupérer le texte du commentaire
+        const project = await Project.findById(req.params.id); // Trouver le projet par ID
+
+        if (!project) {
+            return res.status(404).json({ msg: 'Project not found' });
+        }
+
+        // Ajouter le commentaire au projet
+        const newComment = {
+            text,
+            user: req.user.id,
+            date: new Date()
+        };
+
+        project.comments.push(newComment); // Pousser le commentaire dans le tableau des commentaires
+        await project.save(); // Sauvegarder les changements
+
+        res.json(project.comments); // Retourner les commentaires mis à jour
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+});
+
 
 
 module.exports = router;
