@@ -6,6 +6,7 @@ const multer = require('multer');
 const path = require('path');
 const User = require('../models/User');
 const Donation = require('../models/Donation');
+const Notification = require('../models/Notification');
 
 // Configuration de multer pour le téléchargement des images
 const storage = multer.diskStorage({
@@ -117,7 +118,7 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// route pour valider un projet
+// Route pour valider un projet
 router.put('/validate-project/:id', auth, async (req, res) => {
     const { status } = req.body;
     try {
@@ -130,16 +131,21 @@ router.put('/validate-project/:id', auth, async (req, res) => {
         project.status = status;
         await project.save();
 
-        if (status === 'Accepted') {
-            await User.findByIdAndUpdate(project.user, { $push: { projectsAccepted: project._id } });
-        }
+        // Créer une notification pour l'utilisateur qui a soumis le projet
+        const notification = new Notification({
+            user: project.user,
+            type: 'validation',
+            message: `Votre projet "${project.title}" a été ${status.toLowerCase()}.`,
+        });
+
+        await notification.save();
         
         res.json(project);
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server error');
     }
-});
+});;
 
 // Route pour mettre à jour un projet
 router.put('/:id', auth, upload.single('image'), async (req, res) => {
@@ -164,6 +170,50 @@ router.put('/:id', auth, upload.single('image'), async (req, res) => {
     }
 });
 
+// Route pour mettre à jour le statut d'un projet
+router.put('/update-status/:id', auth, async (req, res) => {
+    const { status, feedback } = req.body;
+
+    try {
+        let project = await Project.findById(req.params.id);
+
+        if (!project) {
+            return res.status(404).json({ msg: 'Project not found' });
+        }
+
+        project.status = status;
+        project.feedback = feedback || project.feedback;
+
+        await project.save();
+
+        res.json(project);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+});
+
+// Route pour prioriser un projet
+router.put('/update-priority/:id', auth, async (req, res) => {
+    const { priority } = req.body;
+
+    try {
+        let project = await Project.findById(req.params.id);
+
+        if (!project) {
+            return res.status(404).json({ msg: 'Project not found' });
+        }
+
+        project.priority = priority;
+
+        await project.save();
+
+        res.json(project);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+});
 
 // Route pour supprimer un projet
 router.delete('/:id', auth, async (req, res) => {
@@ -225,6 +275,34 @@ router.get('/:id/donations', async (req, res) => {
         res.status(500).send('Server error');
     }
 });
+
+// Route pour ajouter un commentaire à un projet
+router.post('/add-comment/:id', auth, async (req, res) => {
+    try {
+        const { text } = req.body; // Récupérer le texte du commentaire
+        const project = await Project.findById(req.params.id); // Trouver le projet par ID
+
+        if (!project) {
+            return res.status(404).json({ msg: 'Project not found' });
+        }
+
+        // Ajouter le commentaire au projet
+        const newComment = {
+            text,
+            user: req.user.id,
+            date: new Date()
+        };
+
+        project.comments.push(newComment); // Pousser le commentaire dans le tableau des commentaires
+        await project.save(); // Sauvegarder les changements
+
+        res.json(project.comments); // Retourner les commentaires mis à jour
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+});
+
 
 
 module.exports = router;

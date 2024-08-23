@@ -8,6 +8,7 @@ const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
 const homeRoutes = require('./routes/homeRoutes');
 const projectRoutes = require('./routes/projectRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 
 require('dotenv').config({ path: './.env' });
 
@@ -40,7 +41,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/home', homeRoutes);
-app.use('/api/projects', projectRoutes);
+app.use('/api/projects', require('./routes/projectRoutes'));
+app.use('/api/notifications', notificationRoutes);
 
 app.get('/test-db', async (req, res) => {
     try {

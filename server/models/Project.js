@@ -8,7 +8,16 @@ const projectSchema = new mongoose.Schema({
     image: { type: String, required: true },
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     date: { type: Date, default: Date.now },
-    status: { type: String, enum: ['Pending', 'Accepted', 'Rejected'], default: 'Pending' } 
+    status: { type: String, enum: ['Pending', 'In Review', 'Approved', 'Rejected', 'Accepted'], default: 'Pending' },
+    priority: {type: String, enum: ['Low', 'Medium', 'high'], default: 'Medium'},
+    feedback: {type: String, default: ''},
+    comments: [
+        {
+            text: { type: String, required: true },
+            user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+            date: { type: Date, default: Date.now }
+        }
+    ]
 });
 
 module.exports = mongoose.model('Project', projectSchema);

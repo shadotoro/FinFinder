@@ -7,6 +7,7 @@ import './AdminDashboard.css';
 function AdminDashboard() {
     const [projects, setProjects] = useState([]);
     const [error, setError] = useState('');
+    const [newComment, setNewComment] = useState(''); // État pour gérer le texte du nouveau commentaire
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -49,6 +50,46 @@ function AdminDashboard() {
         }
     };
 
+    const handlePriorityChange = async (projectId, priority) => {
+        try {
+            const config = {
+                headers: {
+                    'x-auth-token': localStorage.getItem('token'),
+                    'Content-Type': 'application/json'
+                }
+            };
+            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+            const res = await axios.put(`${apiUrl}/api/projects/update-priority/${projectId}`, { priority }, config);
+            setProjects(projects.map(project => 
+                project._id === projectId ? { ...project, priority: res.data.priority } : project
+            ));
+            toast.success('Project priority updated');
+        } catch (err) {
+            toast.error('Failed to update project priority');
+            console.error(err.response?.data);
+        }
+    };
+
+    const addComment = async (projectId, comment) => {
+        try {
+            const config = {
+                headers: {
+                    'x-auth-token': localStorage.getItem('token'),
+                    'Content-Type': 'application/json'
+                }
+            };
+            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+            const res = await axios.post(`${apiUrl}/api/projects/add-comment/${projectId}`, { text: comment }, config);
+            setProjects(projects.map(project => 
+                project._id === projectId ? { ...project, comments: res.data.comments } : project
+            ));
+            toast.success('Comment added');
+        } catch (err) {
+            toast.error('Failed to add comment');
+            console.error(err.response?.data);
+        }
+    };
+
     return (
         <div className="admin-dashboard-container">
             <h1>Admin Dashboard</h1>
@@ -65,8 +106,40 @@ function AdminDashboard() {
                         <h2>{project.title}</h2>
                         <p>{project.description}</p>
                         <p>Status: {project.status}</p>
+                        <p>Priority: {project.priority}</p>
+                        
+                        {/* Boutons de validation */}
                         <button onClick={() => handleValidation(project._id, 'Accepted')}>Accept</button>
                         <button onClick={() => handleValidation(project._id, 'Rejected')}>Reject</button>
+                        
+                        {/* Sélecteur de priorité */}
+                        <select 
+                            value={project.priority} 
+                            onChange={(e) => handlePriorityChange(project._id, e.target.value)}
+                        >
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                        
+                        {/* Section des commentaires */}
+                        <div className="comments-section">
+                            <h3>Comments</h3>
+                            <ul>
+                                {project.comments && project.comments.map(comment => (
+                                    <li key={comment._id}>
+                                        <p>{comment.text}</p>
+                                        <small>By {comment.user.username} on {new Date(comment.date).toLocaleDateString()}</small>
+                                    </li>
+                                ))}
+                            </ul>
+                            <textarea 
+                                placeholder="Add a comment" 
+                                value={newComment} 
+                                onChange={(e) => setNewComment(e.target.value)}
+                            />
+                            <button onClick={() => addComment(project._id, newComment)}>Add Comment</button>
+                        </div>
                     </li>
                 ))}
             </ul>

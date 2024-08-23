@@ -1,0 +1,107 @@
+
+.notifications-container {
+    padding: 20px;
+    background-color: #f1f5f9;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+.notifications-container h2 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center;
+}
+
+.notification-item {
+    background-color: #fff;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.notification-item p {
+    margin: 0 0 10px 0;
+    color: #444;
+}
+
+.notification-item .notification-date {
+    font-size: 0.9rem;
+    color: #777;
+    margin-bottom: 10px;
+}
+
+.notification-item .notification-replies {
+    margin-top: 15px;
+    padding-left: 15px;
+    border-left: 3px solid #ccc;
+}
+
+.notification-item .notification-replies p {
+    margin: 5px 0;
+    color: #555;
+}
+
+.notification-item .reply-form {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.notification-item .reply-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: #f9f9f9;
+}
+
+.notification-item .reply-form button {
+    align-self: flex-end;
+    background-color: #bbd6f4;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.notification-item .reply-form button:hover {
+    background-color: #7b8794;
+}
+
+.notification-item .reply-button {
+    background-color: #7b8794;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.notification-item .reply-button:hover {
+    background-color: #5a6978;
+}
+
+.notification-item .hide-button {
+    background-color: #f44336;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.notification-item .hide-button:hover {
+    background-color: #e53935;
+}

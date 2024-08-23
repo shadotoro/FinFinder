@@ -27,6 +27,7 @@ function Navigation() {
                             <>
                             <li className="nav-item"><Link className="nav-link" to="/submit-project">Submit Project</Link></li>
                             <li className="nav-item"><Link className="nav-link" to="/manage-projects">Manage Projects</Link></li>
+                            <li className="nav-item"><Link className="nav-link" to="/Notifications">Notifications</Link></li>
                             </>
                         )}
                     </>
