@@ -14,6 +14,7 @@ import SubmitProject from './components/SubmitProject';
 import ManageProjects from './components/ManageProjects';
 import AdminDashboard from './components/admin/AdminDashboard';
 import ProjectDetails from './components/ProjectDetails';
+import UserNotifications from './components/UserNotifications';
 
 function App() {
     const isAuthenticated = !!localStorage.getItem('token');
@@ -46,6 +47,7 @@ function App() {
                     {!isAuthenticated && <Route path="/profile" element={<Navigate to="/login" />} />}
                     <Route path="/home" element={<Home />} />
                     <Route path="/projects/:id" element={<ProjectDetails />} />
+                    <Route path="/notifications" element={<PrivateRoute><Navigation /><UserNotifications /></PrivateRoute>} />
                 </Routes>
             </div>
         </Router>

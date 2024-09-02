@@ -10,6 +10,13 @@ function UserNotifications() {
 
     useEffect(() => {
         const fetchNotifications = async () => {
+            const userId = localStorage.getItem('userId');
+            
+            if (!userId) {
+                setError('User ID not found.');
+                return;
+            }
+            
             try {
                 const config = {
                     headers: {
@@ -17,7 +24,7 @@ function UserNotifications() {
                     }
                 };
                 const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3001';
-                const res = await axios.get(`${apiUrl}/api/notifications`, config);
+                const res = await axios.get(`${apiUrl}/api/notifications/${userId}`, config);
                 setNotifications(res.data);
             } catch (err) {
                 setError(err.response?.data?.msg || 'Error fetching notifications');
@@ -25,9 +32,10 @@ function UserNotifications() {
                 console.error(err.response?.data);
             }
         };
-
+    
         fetchNotifications();
     }, []);
+    
 
     const handleReply = async (notificationId) => {
         if (!newReply.trim()) {
