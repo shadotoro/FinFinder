@@ -73,6 +73,12 @@ function UserNotifications() {
                 {notifications.map(notification => (
                     <li key={notification._id} className="notification-item">
                         <p>{notification.message}</p>
+                        {/* Afficher le contenu du commentaire directement dans la notification */}
+                        {notification.comment && (
+                            <div className="comment-content">
+                                <p><strong>Comment:</strong> {notification.comment}</p>
+                            </div>
+                        )}
                         <ul className="replies-list">
                             {notification.replies.map(reply => (
                                 <li key={reply._id} className="reply-item">
@@ -93,7 +99,7 @@ function UserNotifications() {
                 ))}
             </ul>
         </div>
-    );
+    )
 }
 
 export default UserNotifications;

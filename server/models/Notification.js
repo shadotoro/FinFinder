@@ -6,6 +6,7 @@ const notificationSchema = new mongoose.Schema({
     message: { type: String, required: true },
     isRead: { type: Boolean, default: false },
     date: { type: Date, default: Date.now },
+    comment: { type: String },
     replies: [
         {
             user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

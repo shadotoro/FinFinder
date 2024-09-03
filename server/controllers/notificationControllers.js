@@ -44,6 +44,7 @@ exports.addCommentAndNotify = async (req, res) => {
         const notification = new Notification({
             user: project.user,
             message: `New comment on your project: ${project.title}`,
+            comment: req.body.text
         });
 
         await notification.save();
@@ -99,3 +100,27 @@ exports.deleteNotification = async (req, res) => {
         res.status(500).send('Server error');
     }
 };
+
+exports.addReply = async (req, res) => {
+    try {
+        const notification = await Notification.findById(req.params.notificationId);
+        if (!notification) {
+            return res.status(404).json({ msg: 'Notification not found' });
+        }
+
+        const newReply = {
+            user: req.user.id,
+            text: req.body.text,
+            date: Date.now()
+        };
+
+        notification.replies.push(newReply);
+        await notification.save();
+
+        res.json(notification);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};
+

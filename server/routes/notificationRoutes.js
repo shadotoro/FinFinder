@@ -8,5 +8,6 @@ router.get('/:userId', auth, notificationController.getUserNotifications);
 router.put('/update/:notificationId', auth, notificationController.updateNotification);
 router.delete('/delete/:notificationId', auth, notificationController.deleteNotification);
 router.post('/comment-and-notify/:projectId', auth, notificationController.addCommentAndNotify);
+router.post('/:notificationId/reply', auth, notificationController.addReply);
 
 module.exports = router;
